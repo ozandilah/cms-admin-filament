@@ -11,15 +11,7 @@ use Illuminate\Http\JsonResponse;
 
 class TransactionController extends Controller
 {
-    /**
-     * undocumented function summary
-     *
-     * Undocumented function long description
-     *
-     * @param Type $var Description
-     * @return type
-     * @throws conditon
-     **/
+
     public function index() : JsonResponse
     {
         $transactions = Transaction::with('listing')->whereUserId(auth()->id())->paginate();
@@ -30,7 +22,7 @@ class TransactionController extends Controller
             "data"=> $transactions,
         ]);
     }
-    private function _fullyBookedChecker(Store $request) : JsonResponse
+    private function _fullyBookedChecker(Store $request)
     {
         $listing = Listing::find($request->listing_id);
         $runningTransactionCount = Transaction::whereListingId($listing->id)
@@ -48,6 +40,7 @@ class TransactionController extends Controller
                 });
             })->count();
 
+						//validasi booking ditanggal yang sama maka akan error
             if($runningTransactionCount >= $listing-> max_person){
                 throw new HttpResponseException(
                     response()->json([
@@ -61,7 +54,7 @@ class TransactionController extends Controller
     }
 
 
-    public function isAvailable(Store $request) :JsonResponse
+    public function isAvailable(Store $request)
     {
         $this->_fullyBookedChecker($request);
 
